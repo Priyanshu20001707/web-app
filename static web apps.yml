@@ -1,0 +1,38 @@
+name: Azure Static Web Apps CI/CD
+
+# trigger on pushes and PRs to main (change branch name if you use 'master' or another)
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+
+jobs:
+  build_and_deploy_job:
+    runs-on: ubuntu-latest
+    name: Build and Deploy Job
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # Optional: Setup Node if you ever need it for other tasks
+      - name: Setup Node.js (optional)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Build And Deploy to Azure Static Web Apps
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          # IMPORTANT: create this secret in your GitHub repo settings -> Secrets -> Actions
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }} # default token, used by the action
+          action: "upload"
+          app_location: "/"          # root of repo (where index.html lives)
+          api_location: ""           # blank because no Azure Functions
+          output_location: "/"       # root - upload files as-is
+          skip_app_build: true       # <--- crucial for pure static sites
